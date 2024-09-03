@@ -62,16 +62,21 @@ public class BadUsbInterpeter
                 break;
             case "CTRL":
                 await ApplyDelay();
-                ExecuteCtrlCommand(argument);
-                break;
+                ExecuteModifiedKeyCommand(VirtualKeyCode.CONTROL, argument); break;
+            case "SHIFT":
+                await ApplyDelay();
+                ExecuteModifiedKeyCommand(VirtualKeyCode.SHIFT, argument); break;
+            case "ALT":
+                await ApplyDelay();
+                ExecuteModifiedKeyCommand(VirtualKeyCode.MENU, argument); break;
             case "ALTCHAR":
                 await ApplyDelay();
-                ExecuteAltCharCommand(argument);
+                //ExecuteAltCharCommand(argument);
                 break;
             case "ALTSTRING":
             case "ALTCODE":
                 await ApplyDelay();
-                ExecuteAltStringCommand(argument);
+                //ExecuteAltStringCommand(argument);
                 break;
             case "REPEAT":
                 if (int.TryParse(argument, out int repeatCount))
@@ -132,7 +137,71 @@ public class BadUsbInterpeter
     }
 
 
-    private void ExecuteCtrlCommand(string argument)
+    private void ExecuteModifiedKeyCommand(VirtualKeyCode modifier, string argument)
+    {
+        if (!string.IsNullOrEmpty(argument))
+        {
+            VirtualKeyCode key;
+
+            // Проверяем, является ли аргумент специальной клавишей (DOWN, UP и т.д.)
+            switch (argument.ToUpper())
+            {
+                case "DOWN":
+                    key = VirtualKeyCode.DOWN;
+                    break;
+                case "UP":
+                    key = VirtualKeyCode.UP;
+                    break;
+                case "LEFT":
+                    key = VirtualKeyCode.LEFT;
+                    break;
+                case "RIGHT":
+                    key = VirtualKeyCode.RIGHT;
+                    break;
+                case "HOME":
+                    key = VirtualKeyCode.HOME;
+                    break;
+                case "END":
+                    key = VirtualKeyCode.END;
+                    break;
+                case "PGUP":
+                case "PAGEUP":
+                    key = VirtualKeyCode.PRIOR; // Page Up
+                    break;
+                case "PGDN":
+                case "PAGEDOWN":
+                    key = VirtualKeyCode.NEXT; // Page Down
+                    break;
+                case "INSERT":
+                    key = VirtualKeyCode.INSERT;
+                    break;
+                case "DELETE":
+                    key = VirtualKeyCode.DELETE;
+                    break;
+                case "ESC":
+                    key = VirtualKeyCode.ESCAPE;
+                    break;
+                case "BACKSPACE":
+                    key = VirtualKeyCode.BACK;
+                    break;
+                case "TAB":
+                    key = VirtualKeyCode.TAB;
+                    break;
+                case "ENTER":
+                    key = VirtualKeyCode.RETURN;
+                    break;
+                default:
+                    // Если не специальная клавиша, пытаемся интерпретировать как символ
+                    key = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), "VK_" + argument.ToUpper());
+                    break;
+            }
+
+            inputSimulator.Keyboard.ModifiedKeyStroke(modifier, key);
+        }
+    }
+
+
+    private void ExecuteShiftommand(string argument)
     {
         if (!string.IsNullOrEmpty(argument))
         {
@@ -144,17 +213,25 @@ public class BadUsbInterpeter
         }
     }
 
-    private void ExecuteAltCharCommand(string argument)
+    private async Task ExecuteAltCharCommand(string argument)
     {
         if (int.TryParse(argument, out int code) && code >= 0 && code <= 9999)
         {
-            inputSimulator.Keyboard.KeyDown(VirtualKeyCode.MENU);
             foreach (char digit in code.ToString())
             {
+                // Нажимаем и удерживаем клавишу Alt
+                inputSimulator.Keyboard.KeyDown(VirtualKeyCode.MENU);
+                await Task.Delay(10); // Минимальная задержка для стабильности
+
+                // Вводим цифру на цифровой клавиатуре
                 VirtualKeyCode numpadKey = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), "NUMPAD" + digit);
                 inputSimulator.Keyboard.KeyPress(numpadKey);
+                await Task.Delay(10); // Минимальная задержка для стабильности
+
+                // Отпускаем клавишу Alt
+                inputSimulator.Keyboard.KeyUp(VirtualKeyCode.MENU);
+                await Task.Delay(10); // Минимальная задержка перед следующей итерацией
             }
-            inputSimulator.Keyboard.KeyUp(VirtualKeyCode.MENU);
         }
         else
         {
@@ -162,14 +239,17 @@ public class BadUsbInterpeter
         }
     }
 
-    private void ExecuteAltStringCommand(string argument)
+    private async Task ExecuteAltStringCommand(string argument)
     {
         foreach (char c in argument)
         {
             int code = (int)c;
-            ExecuteAltCharCommand(code.ToString());
+            await ExecuteAltCharCommand(code.ToString());
+            await Task.Delay(10); // Минимальная задержка перед переходом к следующему символу
         }
     }
+
+
 
     private void ExecuteKeyCommand(string command, string argument)
     {

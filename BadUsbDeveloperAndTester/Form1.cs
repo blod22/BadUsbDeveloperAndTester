@@ -48,10 +48,12 @@ namespace BadUsbDeveloperAndTester
                 isExecuting = false;
                 executeButton.Text = "Execute (F3)";
                 statusLabel.Text = "Execution stopped";
+                textEditor.ReadOnly = false;  // Разблокируем текстовое поле
                 return;
             }
 
             isExecuting = true;
+            textEditor.ReadOnly = true; // Блокируем текстовое поле
             executeButton.Text = "Stop (F4)";
             string[] lines = textEditor.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
@@ -72,6 +74,7 @@ namespace BadUsbDeveloperAndTester
                     statusLabel.Text = $"Error on line {i + 1}: {ex.Message}";
                     isExecuting = false;
                     executeButton.Text = "Execute (F3)";
+                    textEditor.ReadOnly = false;  // Разблокируем текстовое поле
                     return;
                 }
             }
@@ -80,8 +83,10 @@ namespace BadUsbDeveloperAndTester
             {
                 statusLabel.Text = "Completed";
             }
+
             isExecuting = false;
             executeButton.Text = "Execute (F3)";
+            textEditor.ReadOnly = false;  // Разблокируем текстовое поле
         }
 
         private void LoadFileButton_Click(object sender, EventArgs e)
@@ -110,6 +115,7 @@ namespace BadUsbDeveloperAndTester
                 }
             }
         }
+
         private void textEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
             // Пример: обновление стилей текста при изменении
