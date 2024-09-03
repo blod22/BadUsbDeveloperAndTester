@@ -10,13 +10,13 @@ namespace BadUsbDeveloperAndTester
     public partial class Form1 : Form
     {
         private bool isExecuting = false;
-        private BadUsbInterpeter interpreter; // Добавляем интерпретатор
+        private BadUsbInterpreter interpreter; // Adding the interpreter
 
         public Form1()
         {
             InitializeComponent();
             InitializeTextEditor();
-            interpreter = new BadUsbInterpeter(); // Инициализируем интерпретатор
+            interpreter = new BadUsbInterpreter(); // Initializing the interpreter
         }
 
         private void InitializeTextEditor()
@@ -24,18 +24,18 @@ namespace BadUsbDeveloperAndTester
             textEditor.Language = Language.Custom;
             textEditor.ClearStylesBuffer();
 
-            // Создаем стили для ключевых слов и строк
+            // Create styles for keywords and strings
             var keywordStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
             var stringStyle = new TextStyle(Brushes.Brown, null, FontStyle.Regular);
 
-            // Обработчик изменения текста для динамической подсветки синтаксиса
+            // Text change handler for dynamic syntax highlighting
             textEditor.TextChanged += (sender, args) =>
             {
-                // Очистка старых стилей
+                // Clear old styles
                 args.ChangedRange.ClearStyle(keywordStyle);
                 args.ChangedRange.ClearStyle(stringStyle);
 
-                // Установка стилей для ключевых слов и строк
+                // Apply styles for keywords and strings
                 args.ChangedRange.SetStyle(keywordStyle, @"\b(STRING|DELAY|GUI|REM)\b");
                 args.ChangedRange.SetStyle(stringStyle, "\".*?\"");
             };
@@ -48,12 +48,12 @@ namespace BadUsbDeveloperAndTester
                 isExecuting = false;
                 executeButton.Text = "Execute (F3)";
                 statusLabel.Text = "Execution stopped";
-                textEditor.ReadOnly = false;  // Разблокируем текстовое поле
+                textEditor.ReadOnly = false;  // Unlock the text field
                 return;
             }
 
             isExecuting = true;
-            textEditor.ReadOnly = true; // Блокируем текстовое поле
+            textEditor.ReadOnly = true; // Lock the text field
             executeButton.Text = "Stop (F4)";
             string[] lines = textEditor.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
@@ -67,14 +67,14 @@ namespace BadUsbDeveloperAndTester
                 try
                 {
                     statusLabel.Text = $"Executing, line {i + 1} out of {lines.Length}";
-                    await interpreter.ExecuteLineAsync(line); // Передаем строку в интерпретатор
+                    await interpreter.ExecuteLineAsync(line); // Pass the line to the interpreter
                 }
                 catch (Exception ex)
                 {
                     statusLabel.Text = $"Error on line {i + 1}: {ex.Message}";
                     isExecuting = false;
                     executeButton.Text = "Execute (F3)";
-                    textEditor.ReadOnly = false;  // Разблокируем текстовое поле
+                    textEditor.ReadOnly = false;  // Unlock the text field
                     return;
                 }
             }
@@ -86,7 +86,7 @@ namespace BadUsbDeveloperAndTester
 
             isExecuting = false;
             executeButton.Text = "Execute (F3)";
-            textEditor.ReadOnly = false;  // Разблокируем текстовое поле
+            textEditor.ReadOnly = false;  // Unlock the text field
         }
 
         private void LoadFileButton_Click(object sender, EventArgs e)
@@ -118,19 +118,19 @@ namespace BadUsbDeveloperAndTester
 
         private void textEditor_TextChanged(object sender, FastColoredTextBoxNS.TextChangedEventArgs e)
         {
-            // Пример: обновление стилей текста при изменении
+            // Example: updating text styles on change
             var keywordStyle = new TextStyle(Brushes.Blue, null, FontStyle.Regular);
             var stringStyle = new TextStyle(Brushes.Brown, null, FontStyle.Regular);
 
-            // Очистка старых стилей
+            // Clear old styles
             e.ChangedRange.ClearStyle(keywordStyle);
             e.ChangedRange.ClearStyle(stringStyle);
 
-            // Разделение ключевых слов на несколько групп
+            // Separate keywords into multiple groups
             e.ChangedRange.SetStyle(keywordStyle, @"\b(STRING|DEFAULT_DELAY|DELAY)\b");
             e.ChangedRange.SetStyle(keywordStyle, @"\b(GUI|REM|REPEAT)\b");
 
-            // Установка стилей для строковых значений
+            // Apply styles for string values
             e.ChangedRange.SetStyle(stringStyle, "\".*?\"");
         }
 

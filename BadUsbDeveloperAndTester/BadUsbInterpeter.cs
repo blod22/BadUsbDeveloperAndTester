@@ -1,13 +1,13 @@
 ﻿using WindowsInput.Native;
 using WindowsInput;
 
-public class BadUsbInterpeter
+public class BadUsbInterpreter
 {
     private readonly InputSimulator inputSimulator;
-    private int defaultDelay = 0; // Значение по умолчанию для задержки
-    private string lastCommand; // Последняя выполненная строка
+    private int defaultDelay = 0; // Default value for delay
+    private string lastCommand; // The last executed line
 
-    public BadUsbInterpeter()
+    public BadUsbInterpreter()
     {
         inputSimulator = new InputSimulator();
     }
@@ -17,7 +17,7 @@ public class BadUsbInterpeter
         line = line.Trim();
         if (line.StartsWith("REM") || string.IsNullOrWhiteSpace(line))
         {
-            // Пропуск комментариев и пустых строк
+            // Skip comments and empty lines
             return;
         }
 
@@ -27,7 +27,7 @@ public class BadUsbInterpeter
 
         if (command != "REPEAT")
         {
-            lastCommand = line; // Сохраняем текущую команду как последнюю выполненную, но только если это не REPEAT
+            lastCommand = line; // Save the current command as the last executed, but only if it's not REPEAT
         }
 
         switch (command)
@@ -62,21 +62,24 @@ public class BadUsbInterpeter
                 break;
             case "CTRL":
                 await ApplyDelay();
-                ExecuteModifiedKeyCommand(VirtualKeyCode.CONTROL, argument); break;
+                ExecuteModifiedKeyCommand(VirtualKeyCode.CONTROL, argument);
+                break;
             case "SHIFT":
                 await ApplyDelay();
-                ExecuteModifiedKeyCommand(VirtualKeyCode.SHIFT, argument); break;
+                ExecuteModifiedKeyCommand(VirtualKeyCode.SHIFT, argument);
+                break;
             case "ALT":
                 await ApplyDelay();
-                ExecuteModifiedKeyCommand(VirtualKeyCode.MENU, argument); break;
+                ExecuteModifiedKeyCommand(VirtualKeyCode.MENU, argument);
+                break;
             case "ALTCHAR":
                 await ApplyDelay();
-                //ExecuteAltCharCommand(argument);
+                // ExecuteAltCharCommand(argument);
                 break;
             case "ALTSTRING":
             case "ALTCODE":
                 await ApplyDelay();
-                //ExecuteAltStringCommand(argument);
+                // ExecuteAltStringCommand(argument);
                 break;
             case "REPEAT":
                 if (int.TryParse(argument, out int repeatCount))
@@ -143,7 +146,7 @@ public class BadUsbInterpeter
         {
             VirtualKeyCode key;
 
-            // Проверяем, является ли аргумент специальной клавишей (DOWN, UP и т.д.)
+            // Check if the argument is a special key (DOWN, UP, etc.)
             switch (argument.ToUpper())
             {
                 case "DOWN":
@@ -191,7 +194,7 @@ public class BadUsbInterpeter
                     key = VirtualKeyCode.RETURN;
                     break;
                 default:
-                    // Если не специальная клавиша, пытаемся интерпретировать как символ
+                    // If not a special key, try to interpret it as a character
                     key = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), "VK_" + argument.ToUpper());
                     break;
             }
@@ -201,7 +204,7 @@ public class BadUsbInterpeter
     }
 
 
-    private void ExecuteShiftommand(string argument)
+    private void ExecuteShiftCommand(string argument)
     {
         if (!string.IsNullOrEmpty(argument))
         {
@@ -219,18 +222,18 @@ public class BadUsbInterpeter
         {
             foreach (char digit in code.ToString())
             {
-                // Нажимаем и удерживаем клавишу Alt
+                // Press and hold the Alt key
                 inputSimulator.Keyboard.KeyDown(VirtualKeyCode.MENU);
-                await Task.Delay(10); // Минимальная задержка для стабильности
+                await Task.Delay(10); // Minimum delay for stability
 
-                // Вводим цифру на цифровой клавиатуре
+                // Enter the digit on the numeric keypad
                 VirtualKeyCode numpadKey = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), "NUMPAD" + digit);
                 inputSimulator.Keyboard.KeyPress(numpadKey);
-                await Task.Delay(10); // Минимальная задержка для стабильности
+                await Task.Delay(10); // Minimum delay for stability
 
-                // Отпускаем клавишу Alt
+                // Release the Alt key
                 inputSimulator.Keyboard.KeyUp(VirtualKeyCode.MENU);
-                await Task.Delay(10); // Минимальная задержка перед следующей итерацией
+                await Task.Delay(10); // Minimum delay before the next iteration
             }
         }
         else
@@ -245,11 +248,9 @@ public class BadUsbInterpeter
         {
             int code = (int)c;
             await ExecuteAltCharCommand(code.ToString());
-            await Task.Delay(10); // Минимальная задержка перед переходом к следующему символу
+            await Task.Delay(10); // Minimum delay before moving to the next character
         }
     }
-
-
 
     private void ExecuteKeyCommand(string command, string argument)
     {
