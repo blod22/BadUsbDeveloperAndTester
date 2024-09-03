@@ -10,13 +10,13 @@ namespace BadUsbDeveloperAndTester
     public partial class Form1 : Form
     {
         private bool isExecuting = false;
-        private DuckyScriptInterpreter interpreter; // Добавляем интерпретатор
+        private BadUsbInterpeter interpreter; // Добавляем интерпретатор
 
         public Form1()
         {
             InitializeComponent();
             InitializeTextEditor();
-            interpreter = new DuckyScriptInterpreter(); // Инициализируем интерпретатор
+            interpreter = new BadUsbInterpeter(); // Инициализируем интерпретатор
         }
 
         private void InitializeTextEditor()
@@ -128,7 +128,9 @@ namespace BadUsbDeveloperAndTester
             e.ChangedRange.SetStyle(stringStyle, "\".*?\"");
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
-
+        }
     }
 }

@@ -46,6 +46,7 @@
             textEditor.CharWidth = 8;
             textEditor.DisabledColor = Color.FromArgb(100, 180, 180, 180);
             textEditor.Dock = DockStyle.Top;
+            textEditor.Font = new Font("Courier New", 9.75F);
             textEditor.Hotkeys = "Ctrl+C=Copy, Ctrl+V=Paste, Ctrl+X=Cut, Ctrl+Y=Redo, Ctrl+Z=Undo";
             textEditor.IsReplaceMode = false;
             textEditor.Location = new Point(0, 0);
@@ -110,7 +111,8 @@
             Controls.Add(loadFileButton);
             Controls.Add(textEditor);
             Name = "Form1";
-            Text = "DuckyScript Editor";
+            Text = "BadUsb Editor";
+            Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)textEditor).EndInit();
             ResumeLayout(false);
             PerformLayout();

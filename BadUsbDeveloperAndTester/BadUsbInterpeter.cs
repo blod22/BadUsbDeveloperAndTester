@@ -1,13 +1,13 @@
 ﻿using WindowsInput.Native;
 using WindowsInput;
 
-public class DuckyScriptInterpreter
+public class BadUsbInterpeter
 {
     private readonly InputSimulator inputSimulator;
     private int defaultDelay = 0; // Значение по умолчанию для задержки
     private string lastCommand; // Последняя выполненная строка
 
-    public DuckyScriptInterpreter()
+    public BadUsbInterpeter()
     {
         inputSimulator = new InputSimulator();
     }
