@@ -120,10 +120,14 @@ namespace BadUsbDeveloperAndTester
             e.ChangedRange.ClearStyle(keywordStyle);
             e.ChangedRange.ClearStyle(stringStyle);
 
-            // Установка стилей для ключевых слов и строк
-            e.ChangedRange.SetStyle(keywordStyle, @"\b(STRING|DELAY|GUI|REM)\b");
+            // Разделение ключевых слов на несколько групп
+            e.ChangedRange.SetStyle(keywordStyle, @"\b(STRING|DEFAULT_DELAY|DELAY)\b");
+            e.ChangedRange.SetStyle(keywordStyle, @"\b(GUI|REM|REPEAT)\b");
+
+            // Установка стилей для строковых значений
             e.ChangedRange.SetStyle(stringStyle, "\".*?\"");
         }
+
 
 
     }
